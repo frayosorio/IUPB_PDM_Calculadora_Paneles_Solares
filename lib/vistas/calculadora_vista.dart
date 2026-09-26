@@ -15,6 +15,8 @@ class _CalculadoraPanelesState extends State<CalculadoraPaneles> {
   final _estadoFormulario = GlobalKey<FormState>();
   Ciudad? _ciudadSeleccionada;
   List<Ciudad> _ciudades = [];
+  DateTime _desde = DateTime.now();
+  DateTime _hasta = DateTime.now();
 
   void _cargarCiudades() async {
     String datosJson = await rootBundle.loadString(
@@ -54,6 +56,59 @@ class _CalculadoraPanelesState extends State<CalculadoraPaneles> {
                     _ciudadSeleccionada = ciudad;
                   });
                 },
+                validator: (ciudad) => ciudad == null? "Debe seleccionar una ciudad":null,
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child:TextFormField(
+                      decoration: const InputDecoration(
+                        labelText: "Fecha de inicio"
+                      ),
+                      readOnly: true,
+                      controller: TextEditingController(
+                        text: _desde.toString().substring(0,10)
+                      ),
+                      onTap: () async {
+                        final selectorFecha = await showDatePicker(
+                            context: context,
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime.now(),
+                        initialDate: _desde);
+                        if(selectorFecha!=null){
+                          setState(() {
+                            _desde = selectorFecha;
+                          });
+                        }
+                      }
+                    )
+                  ),
+                  const SizedBox(height:20),
+                  Expanded(
+                      child:TextFormField(
+                          decoration: const InputDecoration(
+                              labelText: "Fecha hasta"
+                          ),
+                          readOnly: true,
+                          controller: TextEditingController(
+                              text: _hasta.toString().substring(0,10)
+                          ),
+                          onTap: () async {
+                            final selectorFecha = await showDatePicker(
+                                context: context,
+                                firstDate: _desde,
+                                lastDate: DateTime.now(),
+                                initialDate: _hasta);
+                            if(selectorFecha!=null){
+                              setState(() {
+                                _hasta = selectorFecha;
+                              });
+                            }
+                          }
+                      )
+                  ),
+                ],
               ),
             ],
           ),
